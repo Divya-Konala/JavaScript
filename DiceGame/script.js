@@ -1,38 +1,39 @@
 let players=document.querySelectorAll("input");
 let rollDice_btns=document.querySelectorAll(".roll_dice");
-let scores=document.getElementsByTagName("span");
+let scores=document.getElementsByClassName("score");
 let winner_btn=document.getElementById("declare_winner");
 winner_btn.disabled=true;
+let noOfRollDiceButtonsClicked=0;
 
 for(let i=0;i<rollDice_btns.length;i++){
     rollDice_btns[i].addEventListener("click", ()=>{rollDice(rollDice_btns[i].id)});
 }
 
 rollDice = (btn_id) => {
+    noOfRollDiceButtonsClicked++;
     rollDice_btns[btn_id].disabled=true;
     let num = Math.ceil(Math.random()*6);
     scores[btn_id].innerText=num;
-    canWinnerEnabled();
+    if(noOfRollDiceButtonsClicked==rollDice_btns.length)  winner_btn.disabled=false;
 }
 
-canWinnerEnabled=()=>{
-    for(let i=0;i<rollDice_btns.length;i++){
-        if(rollDice_btns[i].disabled===false){
-            break;
-        }
-        else if(i===rollDice_btns.length-1){
-            winner_btn.disabled=false;
-        }
-    }
-}
+
 
 winner_btn.addEventListener("click",()=>{
-    largestNum_index=0;
-    for(let i=0;i<scores.length;i++){
-        if(scores[i].innerText>scores[largestNum_index].innerText)
-            largestNum_index=i;
+    let highestScore=0;
+    for(let i of scores){
+        if(i.innerText>highestScore) highestScore=i.innerText;
     }
-    document.getElementById("winner").innerText=players[largestNum_index].value;
+    let winnersIds=[];
+    let winnersList="";
+    for(let i in scores){
+       if(scores[i].innerText==highestScore){
+        winnersIds.push(i);
+        if(winnersList==="") winnersList+=players[i].value;
+        else winnersList+=", "+players[i].value;
+       }
+    }
+    document.getElementById("winner").innerText=winnersList;
     winner_btn.disabled=true;
 })
 
